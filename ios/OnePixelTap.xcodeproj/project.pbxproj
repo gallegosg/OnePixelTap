@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* OnePixelTapTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* OnePixelTapTests.m */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
@@ -20,6 +19,7 @@
 		913AFF8BA0F68EA9700FE7C8 /* libPods-OnePixelTap-tvOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D99F42D28A01CD558DCBCAC0 /* libPods-OnePixelTap-tvOSTests.a */; };
 		A052E85CE174B0E697848C89 /* libPods-OnePixelTap.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 97E9C7F693E09E3624B18AE3 /* libPods-OnePixelTap.a */; };
 		CBA2D154DA955209BD51929B /* libPods-OnePixelTapTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D9F2F7F66166105072AD839 /* libPods-OnePixelTapTests.a */; };
+		6ED3CF5605894BAA98DE2E87 /* PressStart2P-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 18D6916DE8CB4252AA068076 /* PressStart2P-Regular.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -67,6 +67,7 @@
 		D99F42D28A01CD558DCBCAC0 /* libPods-OnePixelTap-tvOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-OnePixelTap-tvOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
+		18D6916DE8CB4252AA068076 /* PressStart2P-Regular.ttf */ = {isa = PBXFileReference; name = "PressStart2P-Regular.ttf"; path = "../assets/fonts/PressStart2P-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -165,6 +166,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BE8734C2DCCB7A49065CDAA7 /* Pods */,
+				3360A3F9554C44E4AB531DF7 /* Resources */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -197,6 +199,15 @@
 			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
+		};
+		3360A3F9554C44E4AB531DF7 /* Resources */ = {
+			isa = "PBXGroup";
+			children = (
+				18D6916DE8CB4252AA068076 /* PressStart2P-Regular.ttf */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+			path = "";
 		};
 /* End PBXGroup section */
 
@@ -285,7 +296,7 @@
 		83CBB9F71A601CBA00E9B192 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0940;
+				LastUpgradeCheck = 940;
 				ORGANIZATIONNAME = Facebook;
 				TargetAttributes = {
 					00E356ED1AD99517003FC87E = {
@@ -338,6 +349,7 @@
 			files = (
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
+				6ED3CF5605894BAA98DE2E87 /* PressStart2P-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
