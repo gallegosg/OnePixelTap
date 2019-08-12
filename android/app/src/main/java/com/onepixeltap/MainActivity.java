@@ -1,4 +1,4 @@
-package com.onepixeltap;
+package com.gerardogallegos.pixeltap;
 
 import com.facebook.react.ReactActivity;
 

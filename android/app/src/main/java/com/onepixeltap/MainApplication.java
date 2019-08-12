@@ -1,4 +1,4 @@
-package com.onepixeltap;
+package com.gerardogallegos.pixeltap;
 
 import android.app.Application;
 import android.util.Log;

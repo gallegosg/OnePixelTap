@@ -55,6 +55,7 @@
 	<false/>
 	<key>UIAppFonts</key>
 	<array>
+		<string>Feather.ttf</string>
 		<string>PressStart2P-Regular.ttf</string>
 	</array>
 </dict>
