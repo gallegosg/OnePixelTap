@@ -19,7 +19,6 @@ export default class Game extends Component {
       highScore: 0,
       isDarkMode: false,
       showTutorial: false,
-      hasPlayed: false,
       tutorialFade: new Animated.Value(1),
     };
   }
@@ -31,10 +30,9 @@ export default class Game extends Component {
    */
   componentDidMount = async () => {
     try{
-      const highScore = await AsyncStorage.getItem('highScore')
-      const hasPlayed = await AsyncStorage.getItem('hasPlayed');
-      highScore >= 15 && this.props.blackoutUnlocked()
-      this.setState({highScore, hasPlayed})
+      const highScore = await AsyncStorage.getItem('blackoutHighScore')
+      highScore >= 25 && this.props.discoUnlocked()
+      this.setState({highScore})
     } catch(e) {
       Alert.alert(e)
     }
@@ -49,7 +47,6 @@ export default class Game extends Component {
     this.generateNewCoordinates();
     this.setState({isPlaying: true, score: 0})
     this.props.changeGameState(true)
-    const secondDuration = this.state.isDarkMode ? 750 : 1000
     const timer = setInterval(() => {
       this.setState((prevState) => ({timer: prevState.timer - 1}), async () => {
         if(this.state.timer === 0){
@@ -57,16 +54,12 @@ export default class Game extends Component {
           const {score, highScore} = this.state
           if(score > highScore){//set highscore 
             this.setState({highScore: score})
-            await AsyncStorage.setItem('highScore', JSON.stringify(score));
+            await AsyncStorage.setItem('blackoutHighScore', JSON.stringify(score));
           }
 
           //Check if user unlccoked disco mode
-          score >= 15 && this.props.blackoutUnlocked()
+          score >= 25 && this.props.discoUnlocked()
 
-          if(!this.state.hasPlayed){//if this was users first game, set hasPlayed to true
-            await AsyncStorage.setItem('hasPlayed', JSON.stringify(true))
-            this.setState({hasPlayed: true})
-          }
           this.setState({
             timer: 30,
             isPlaying: false,
@@ -75,10 +68,10 @@ export default class Game extends Component {
           this.props.changeGameState(false)
         }
       })
-    }, secondDuration)
+    }, 1000)
   }
 
-  handleBeginPress = () => !this.state.hasPlayed ? this.runTutorial() : this.startGame()
+  handleBeginPress = () => this.startGame()
 
   toggleDarkMode = () => this.setState(prevState => ({ isDarkMode: !prevState.isDarkMode}))
   
@@ -96,13 +89,13 @@ export default class Game extends Component {
     }, 5000)
     Animated.timing(this.animatedValue, {
       toValue: 100,
-      duration: 750,
+      duration: 500,
       useNativeDriver: true
     }).start(() => {
       Animated.timing(this.animatedValue, {
         toValue: 1,
-        duration: 1500,
-        delay: 1500,
+        duration: 1000,
+        delay: 800,
         useNativeDriver: true
       }).start()
     })
@@ -133,31 +126,22 @@ export default class Game extends Component {
   }
 
   render() {
-    const { isPlaying, x, y, timer, score, highScore, isDarkMode, hasPlayed, showTutorial, tutorialFade, dotHeight, dotWidth } = this.state;
+    const { isPlaying, x, y, timer, score, highScore, isDarkMode, showTutorial, tutorialFade, dotHeight, dotWidth } = this.state;
     const timeLeft = timer < 10 ? `0${timer}` : timer;
-    const backgroundColor = isDarkMode ? '#000' : '#fff'
-    const color = isDarkMode ? '#fff' : '#000'
     const animatedStyles = { transform: [{scale: this.animatedValue }]};
 
     return (
-      <SafeAreaView style={[styles.container, {backgroundColor}]}>
+      <SafeAreaView style={styles.container}>
         {/* header */}
         <View style={styles.header}>
-          <Text style={[styles.headerItem, { color }]}>0:{timeLeft}</Text>
-          <Text style={[styles.headerItem, { color }]}>{score}</Text>
+          <Text style={styles.headerItem}>0:{timeLeft}</Text>
+          <Text style={styles.headerItem}>{score}</Text>
         </View>
-
-        {/* Tutorial instructions */}
-        {showTutorial && !hasPlayed &&
-          <Animated.View style={[styles.tutorialContainer, { opacity: tutorialFade}]}>
-            <Text style={[styles.tutorialText, { color }]}>Tap the pixel as it appears</Text>
-          </Animated.View>
-        }
 
         {/* /game board */}
         {isPlaying  && 
           <TouchableOpacity style={[styles.dotContainer, {top: y, left: x}]} onPress={this.gotDot}>
-            <Animated.View style={[{ backgroundColor: color, height: 1, width: 1}, animatedStyles]} />
+            <Animated.View style={[{ backgroundColor: '#fff', height: 1, width: 1}, animatedStyles]} />
           </TouchableOpacity>
         }
 
@@ -165,12 +149,16 @@ export default class Game extends Component {
         {!isPlaying && !showTutorial &&
           <View style={styles.main}>
             <View style={{flex: 0.8, justifyContent: 'space-around', alignItems: 'center'}}>
-              <Text style={[styles.name, { color }]}>PIXEL TAP</Text>
-              <TouchableOpacity onPress={this.handleBeginPress} style={[styles.startButton, { backgroundColor: color}]}>
-                <Text style={[styles.startText, { color: backgroundColor }]}>BEGIN</Text>
+              <View style={styles.titleContainer}>
+                <Text style={styles.name}>PIXEL TAP</Text>
+                <Text style={styles.gameMode}>Blackout</Text>
+              </View>
+
+              <TouchableOpacity onPress={this.handleBeginPress} style={styles.startButton}>
+                <Text style={styles.startText}>BEGIN</Text>
               </TouchableOpacity>
             </View>
-            {!!highScore && <Text style={[styles.highscore, { color }]}>HIGHSCORE: {highScore}</Text>}
+            {!!highScore && <Text style={styles.highscore}>HIGHSCORE: {highScore}</Text>}
             <View style={styles.footer}>
               {/* <Icon 
                 name={isDarkMode ? 'sun' : 'moon'} 
@@ -188,7 +176,8 @@ export default class Game extends Component {
 const styles = {
   container: {
     flex: 1,
-    paddingTop: 10
+    paddingTop: 10,
+    backgroundColor: '#101010'
   },
   header: {
     width: '100%',
@@ -200,12 +189,16 @@ const styles = {
     flex: 0.5,
     width: '100%',
     alignItems: 'center',
-    textAlign: 'center'
+    textAlign: 'center',
+    color: '#fff'
   },
   main: {
     flex: 1,
     justifyContent: 'space-around',
     alignItems: 'center',
+  },
+  titleContainer: {
+    alignItems: 'center'
   },
   dotContainer: {
     padding: 10,
@@ -215,20 +208,23 @@ const styles = {
     padding: 20,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#fff'
   },
   startText: {
     fontFamily,
     paddingTop: 10,
-    color: '#111',
+    color: '#000',
     fontSize: 22,
   },
   name: {
     fontFamily,
     fontSize: 30,
+    color: '#fff'
   },
   highscore: {
     fontFamily,
     fontSize: 12,
+    color: '#fff'
   },
   tutorialText: {
     fontFamily,
@@ -248,5 +244,11 @@ const styles = {
     position: 'absolute',
     justifyContent: 'center',
     bottom: 100
+  },
+  gameMode: {
+    fontFamily: 'AmaticSC-Bold',
+    color: '#ddd',
+    fontSize: 80,
+    transform: [{ rotate: "-5deg" }]
   }
 };

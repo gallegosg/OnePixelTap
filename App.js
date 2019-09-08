@@ -8,11 +8,11 @@
 
 import React from 'react';
 
-import Game from './src/Game'
+import Menu from './src/Menu'
 
 const App = () => {
   return (
-    <Game />
+    <Menu />
   );
 };
 export default App;

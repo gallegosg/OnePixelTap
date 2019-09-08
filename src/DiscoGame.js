@@ -1,25 +1,21 @@
-import React, { Component } from 'react'
-import { View, Text, SafeAreaView, TouchableOpacity, Animated, Alert } from 'react-native'
+import React, { Component, Fragment } from 'react'
+import { View, Text, SafeAreaView, TouchableOpacity, Animated, Alert, Platform } from 'react-native'
 import AsyncStorage from '@react-native-community/async-storage'
-import { isIphoneX } from 'react-native-iphone-x-helper'
 import Icon from 'react-native-vector-icons/Feather';
-import {height, width, dotMaxHeight, dotMaxWidth, dotMinY} from './utils'
+import DiscoDot from './components/DiscoDot'
 
 const fontFamily = 'PressStart2P-Regular'
 
-export default class Game extends Component {
+export default class DiscoGame extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      x: dotMaxWidth / 2,
-      y: dotMaxHeight / 2,
       isPlaying: false,
       timer: 30,
       score: 0,
       highScore: 0,
       isDarkMode: false,
       showTutorial: false,
-      hasPlayed: false,
       tutorialFade: new Animated.Value(1),
     };
   }
@@ -31,10 +27,8 @@ export default class Game extends Component {
    */
   componentDidMount = async () => {
     try{
-      const highScore = await AsyncStorage.getItem('highScore')
-      const hasPlayed = await AsyncStorage.getItem('hasPlayed');
-      highScore >= 15 && this.props.blackoutUnlocked()
-      this.setState({highScore, hasPlayed})
+      const highScore = await AsyncStorage.getItem('discoHighScore')
+      this.setState({highScore})
     } catch(e) {
       Alert.alert(e)
     }
@@ -46,7 +40,6 @@ export default class Game extends Component {
    * Timer goes faster if in dark mode
    */
   startGame = () => {
-    this.generateNewCoordinates();
     this.setState({isPlaying: true, score: 0})
     this.props.changeGameState(true)
     const secondDuration = this.state.isDarkMode ? 750 : 1000
@@ -57,15 +50,7 @@ export default class Game extends Component {
           const {score, highScore} = this.state
           if(score > highScore){//set highscore 
             this.setState({highScore: score})
-            await AsyncStorage.setItem('highScore', JSON.stringify(score));
-          }
-
-          //Check if user unlccoked disco mode
-          score >= 15 && this.props.blackoutUnlocked()
-
-          if(!this.state.hasPlayed){//if this was users first game, set hasPlayed to true
-            await AsyncStorage.setItem('hasPlayed', JSON.stringify(true))
-            this.setState({hasPlayed: true})
+            await AsyncStorage.setItem('discoHighScore', JSON.stringify(score));
           }
           this.setState({
             timer: 30,
@@ -78,67 +63,23 @@ export default class Game extends Component {
     }, secondDuration)
   }
 
-  handleBeginPress = () => !this.state.hasPlayed ? this.runTutorial() : this.startGame()
-
-  toggleDarkMode = () => this.setState(prevState => ({ isDarkMode: !prevState.isDarkMode}))
-  
-  /**
-   * play a brief tutorial when playing for the first time
-   */
-  runTutorial = () => {
-    this.setState({showTutorial: true, dotHeight: 100, dotWidth: 100}, () => this.startGame())
-    setTimeout(() => {
-      Animated.timing(this.state.tutorialFade, {
-        toValue: 0,
-        duration: 1000,
-        useNativeDriver: true
-      }).start(() => this.setState({showTutorial: false}))
-    }, 5000)
-    Animated.timing(this.animatedValue, {
-      toValue: 100,
-      duration: 750,
-      useNativeDriver: true
-    }).start(() => {
-      Animated.timing(this.animatedValue, {
-        toValue: 1,
-        duration: 1500,
-        delay: 1500,
-        useNativeDriver: true
-      }).start()
-    })
-  }
-  /**
-   * Generate new coordinates for the dot
-   */
-  generateNewCoordinates = () => {
-    const x = this.getRandomArbitrary(5, dotMaxWidth)
-    const y = this.getRandomArbitrary(dotMinY, dotMaxHeight)
-    this.setState({x, y})
-  }
-
-  /**
-   * generates a random number
-   */
-  getRandomArbitrary = (min, max) => {
-    return Math.random() * (max - min) + min
-  }
+  handleBeginPress = () => this.startGame()
 
   /**
    * on tap dot, creates a new dot on the screen
    * and incrememnts the score
    */
   gotDot = () => {
-    this.generateNewCoordinates()
     this.setState((prevState) => ({score: prevState.score + 1}))
   }
 
   render() {
-    const { isPlaying, x, y, timer, score, highScore, isDarkMode, hasPlayed, showTutorial, tutorialFade, dotHeight, dotWidth } = this.state;
+    const { isPlaying, x, y, timer, score, highScore, isDarkMode, showTutorial, tutorialFade, dotHeight, dotWidth } = this.state;
     const timeLeft = timer < 10 ? `0${timer}` : timer;
     const backgroundColor = isDarkMode ? '#000' : '#fff'
     const color = isDarkMode ? '#fff' : '#000'
     const animatedStyles = { transform: [{scale: this.animatedValue }]};
-
+// edd6a4
     return (
       <SafeAreaView style={[styles.container, {backgroundColor}]}>
         {/* header */}
@@ -147,25 +88,32 @@ export default class Game extends Component {
           <Text style={[styles.headerItem, { color }]}>{score}</Text>
         </View>
 
-        {/* Tutorial instructions */}
-        {showTutorial && !hasPlayed &&
-          <Animated.View style={[styles.tutorialContainer, { opacity: tutorialFade}]}>
-            <Text style={[styles.tutorialText, { color }]}>Tap the pixel as it appears</Text>
-          </Animated.View>
-        }
-
         {/* /game board */}
-        {isPlaying  && 
-          <TouchableOpacity style={[styles.dotContainer, {top: y, left: x}]} onPress={this.gotDot}>
-            <Animated.View style={[{ backgroundColor: color, height: 1, width: 1}, animatedStyles]} />
-          </TouchableOpacity>
+        {isPlaying && 
+          <Fragment>
+            <DiscoDot onPress={this.gotDot}/>
+            <DiscoDot onPress={this.gotDot}/>
+            <DiscoDot onPress={this.gotDot}/>
+            <DiscoDot onPress={this.gotDot}/>
+            <DiscoDot onPress={this.gotDot}/>
+            <DiscoDot onPress={this.gotDot}/>
+            <DiscoDot onPress={this.gotDot}/>
+            <DiscoDot onPress={this.gotDot}/>
+            <DiscoDot onPress={this.gotDot}/>
+            <DiscoDot onPress={this.gotDot}/>
+            <DiscoDot onPress={this.gotDot}/>
+            <DiscoDot onPress={this.gotDot}/>
+          </Fragment>
         }
 
         {/* menu */}
-        {!isPlaying && !showTutorial &&
+        {!isPlaying &&
           <View style={styles.main}>
             <View style={{flex: 0.8, justifyContent: 'space-around', alignItems: 'center'}}>
-              <Text style={[styles.name, { color }]}>PIXEL TAP</Text>
+              <View style={styles.titleContainer}>
+                <Text style={[styles.name, { color }]}>PIXEL TAP</Text>
+                <Text style={styles.disco}>Disco</Text>
+              </View>
               <TouchableOpacity onPress={this.handleBeginPress} style={[styles.startButton, { backgroundColor: color}]}>
                 <Text style={[styles.startText, { color: backgroundColor }]}>BEGIN</Text>
               </TouchableOpacity>
@@ -207,12 +155,16 @@ const styles = {
     justifyContent: 'space-around',
     alignItems: 'center',
   },
+  titleContainer: {
+    alignItems: 'center'
+  },
   dotContainer: {
     padding: 10,
     position: 'absolute',
   },
   startButton: {
     padding: 20,
+    borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -225,6 +177,12 @@ const styles = {
   name: {
     fontFamily,
     fontSize: 30,
+  },
+  disco: {
+    fontFamily: Platform.OS == 'ios' ? 'dreamland' : 'dreamlan',
+    color: 'blue',
+    fontSize: 70,
+    transform: [{ rotate: "-5deg" }]
   },
   highscore: {
     fontFamily,
